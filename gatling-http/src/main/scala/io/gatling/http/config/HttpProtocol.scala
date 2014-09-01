@@ -180,7 +180,7 @@ case class HttpProtocolRequestPart(
   cache: Boolean,
   disableUrlEscaping: Boolean,
   silentURI: Option[Regex],
-  signatureCalculator: Option[SignatureCalculator])
+  signatureCalculator: Option[Expression[SignatureCalculator]])
 
 case class HttpProtocolResponsePart(
   followRedirect: Boolean,
