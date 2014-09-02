@@ -92,9 +92,10 @@ case class HttpProtocolBuilder(protocol: HttpProtocol) extends StrictLogging {
   def silentURI(regex: String) = newRequestPart(protocol.requestPart.copy(silentURI = Some(regex.r)))
   def disableUrlEscaping = newRequestPart(protocol.requestPart.copy(disableUrlEscaping = true))
   def signatureCalculator(calculator: Expression[SignatureCalculator]): HttpProtocolBuilder = newRequestPart(protocol.requestPart.copy(signatureCalculator = Some(calculator)))
-  def signatureCalculator(calculator: (Request, RequestBuilderBase[_]) => Unit): HttpProtocolBuilder = signatureCalculator((_: Session) => Success(new SignatureCalculator {
+  def signatureCalculator(calculator: SignatureCalculator): HttpProtocolBuilder = signatureCalculator((_: Session) => Success(calculator))
+  def signatureCalculator(calculator: (Request, RequestBuilderBase[_]) => Unit): HttpProtocolBuilder = signatureCalculator(new SignatureCalculator {
     def calculateAndAddSignature(request: Request, requestBuilder: RequestBuilderBase[_]): Unit = calculator(request, requestBuilder)
-  }))
+  })
 
   // responsePart
   private def newResponsePart(responsePart: HttpProtocolResponsePart) = copy(protocol = copy(protocol.copy(responsePart = responsePart)))

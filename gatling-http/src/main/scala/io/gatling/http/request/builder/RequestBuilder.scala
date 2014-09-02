@@ -117,7 +117,8 @@ abstract class RequestBuilder[B <: RequestBuilder[B]](val commonAttributes: Comm
   def proxy(httpProxy: Proxy): B = newInstance(commonAttributes.copy(proxy = Some(httpProxy.proxyServer), secureProxy = httpProxy.secureProxyServer))
 
   def signatureCalculator(calculator: Expression[SignatureCalculator]): B = newInstance(commonAttributes.copy(signatureCalculator = Some(calculator)))
-  def signatureCalculator(calculator: (Request, RequestBuilderBase[_]) => Unit): B = signatureCalculator((_: Session) => Success(new SignatureCalculator {
+  def signatureCalculator(calculator: SignatureCalculator): B = signatureCalculator((_: Session) => Success(calculator))
+  def signatureCalculator(calculator: (Request, RequestBuilderBase[_]) => Unit): B = signatureCalculator(new SignatureCalculator {
     def calculateAndAddSignature(request: Request, requestBuilder: RequestBuilderBase[_]): Unit = calculator(request, requestBuilder)
-  }))
+  })
 }
